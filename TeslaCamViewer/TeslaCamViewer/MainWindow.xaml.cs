@@ -1,24 +1,13 @@
 ﻿using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace TeslaCamViewer
 {
@@ -27,6 +16,7 @@ namespace TeslaCamViewer
         public MediaElement left;
         public MediaElement right;
         public MediaElement front;
+        public MediaElement back;
         public TabControl tabs;
 
         public void LoadFileSet(TeslaCamFileSet set)
@@ -34,9 +24,11 @@ namespace TeslaCamViewer
             left.Stop();
             right.Stop();
             front.Stop();
+            back.Stop();
             bool playLeft = false;
             bool playRight = false;
             bool playFront = false;
+            bool playBack = false;
             foreach (var cam in set.Cameras)
             {
                 if (cam.CameraLocation == TeslaCamFile.CameraType.FRONT)
@@ -54,11 +46,18 @@ namespace TeslaCamViewer
                     this.right.Source = new Uri(cam.FilePath);
                     playRight = true;
                 }
+
+                if (cam.CameraLocation == TeslaCamFile.CameraType.BACK)
+                {
+                    this.back.Source = new Uri(cam.FilePath);
+                    playBack = true;
+                }
             }
 
             if (playLeft) left.Play();
             if (playRight) right.Play();
             if (playFront) front.Play();
+            if (playBack) back.Play();
             this.tabs.SelectedIndex = 1;
         }
     }
@@ -84,6 +83,7 @@ namespace TeslaCamViewer
             model.VideoModel.left = this.left;
             model.VideoModel.right = this.right;
             model.VideoModel.front = this.front;
+            model.VideoModel.back = this.back;
             model.VideoModel.tabs = this.tabs;
         }
 
@@ -114,6 +114,7 @@ namespace TeslaCamViewer
                 left.Position = TimeSpan.FromSeconds(timeSlider.Value * TotalTime.TotalSeconds);
                 right.Position = TimeSpan.FromSeconds(timeSlider.Value * TotalTime.TotalSeconds);
                 front.Position = TimeSpan.FromSeconds(timeSlider.Value * TotalTime.TotalSeconds);
+                back.Position = TimeSpan.FromSeconds(timeSlider.Value * TotalTime.TotalSeconds);
             }
         }
 
@@ -122,6 +123,7 @@ namespace TeslaCamViewer
             left.Pause();
             right.Pause();
             front.Pause();
+            back.Pause();
         }
 
         private void timeSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
@@ -129,6 +131,7 @@ namespace TeslaCamViewer
             left.Play();
             right.Play();
             front.Play();
+            back.Play();
         }
 
         private void timeSlider_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
@@ -182,6 +185,7 @@ namespace TeslaCamViewer
                 DirectoryInfo teslaCamDir = null;
                 TeslaCamDirectoryCollection recentClips = null;
                 TeslaCamDirectoryCollection savedClips = null;
+                TeslaCamDirectoryCollection sentryClips = null;
 
                 // Run the following in a worker thread and wait for it to finish
                 await Task.Run(() =>
@@ -205,6 +209,7 @@ namespace TeslaCamViewer
                         // Get child dirs
                         var recentClipsDir = teslaCamDir.GetDirectories().FirstOrDefault(e => e.Name == "RecentClips");
                         var savedClipsDir = teslaCamDir.GetDirectories().FirstOrDefault(e => e.Name == "SavedClips");
+                        var sentryClipsDir = teslaCamDir.GetDirectories().FirstOrDefault(e => e.Name == "SentryClips");
 
                         // Load if found
                         if (recentClipsDir != null)
@@ -219,6 +224,12 @@ namespace TeslaCamViewer
                             savedClips.BuildFromBaseDirectory(savedClipsDir.FullName);
                             savedClips.SetDisplayName("Saved Clips");
                         }
+                        if (sentryClipsDir != null)
+                        {
+                            sentryClips = new TeslaCamDirectoryCollection();
+                            sentryClips.BuildFromBaseDirectory(sentryClipsDir.FullName);
+                            sentryClips.SetDisplayName("Sentry Clips");
+                        }
                     }
                 });
 
@@ -231,6 +242,7 @@ namespace TeslaCamViewer
                     // Add clips to UI tree
                     if (recentClips != null) { this.model.ListItems.Add(recentClips); }
                     if (savedClips != null) { this.model.ListItems.Add(savedClips); }
+                    if (sentryClips != null) { this.model.ListItems.Add(sentryClips); }
 
                     // Navigate
                     this.browseFrame.Navigate(new TeslaCamViewer.Views.RootCollectionView(this.model));
@@ -261,12 +273,14 @@ namespace TeslaCamViewer
                 left.Play();
                 right.Play();
                 front.Play();
+                back.Play();
             }
             else
             {
                 left.Pause();
                 right.Pause();
                 front.Pause();
+                back.Pause();
             }
             paused = !paused;
         }
@@ -305,12 +319,12 @@ namespace TeslaCamViewer
 
         private void about_Menu_Click(object sender, RoutedEventArgs e)
         {
-            this.ShowMessageAsync("TeslaCam Viewer V0.4.1", "TeslaCam Viewer V0.4.1 Copyright 2019 mattw\n\nSee LICENCES.txt for more information.");
+            this.ShowMessageAsync("TeslaCam Viewer V0.5.0", "TeslaCam Viewer V0.5.0");
         }
 
         private void viewOnGitHub_Menu_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/mattw01/TeslaCamViewer/");
+            System.Diagnostics.Process.Start("https://github.com/joergpichler/TeslaCamViewer");
         }
 
         private void SetFullscreen(bool Enable)
@@ -387,6 +401,7 @@ namespace TeslaCamViewer
             this.left.SpeedRatio = model.CalculatedPlaybackSpeed;
             this.right.SpeedRatio = model.CalculatedPlaybackSpeed;
             this.front.SpeedRatio = model.CalculatedPlaybackSpeed;
+            this.back.SpeedRatio = model.CalculatedPlaybackSpeed;
         }
     }
 }

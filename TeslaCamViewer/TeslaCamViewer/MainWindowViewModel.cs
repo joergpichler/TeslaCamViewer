@@ -212,6 +212,8 @@ namespace TeslaCamViewer
                     {
                         this.BottomVideoRowHeight = new GridLength(0);
                         this.TopVideoRowHeight = new GridLength(1, GridUnitType.Star);
+                        this.LeftVideoColumnWidth = new GridLength(1, GridUnitType.Star);
+                        this.RightVideoColumnWidth = new GridLength(0);
                     }
                     if (cam == TeslaCamFile.CameraType.LEFT_REPEATER)
                     {
@@ -224,6 +226,13 @@ namespace TeslaCamViewer
                     {
                         this.TopVideoRowHeight = new GridLength(0);
                         this.BottomVideoRowHeight = new GridLength(1, GridUnitType.Star);
+                        this.RightVideoColumnWidth = new GridLength(1, GridUnitType.Star);
+                        this.LeftVideoColumnWidth = new GridLength(0);
+                    }
+                    if (cam == TeslaCamFile.CameraType.BACK)
+                    {
+                        this.BottomVideoRowHeight = new GridLength(0);
+                        this.TopVideoRowHeight = new GridLength(1, GridUnitType.Star);
                         this.RightVideoColumnWidth = new GridLength(1, GridUnitType.Star);
                         this.LeftVideoColumnWidth = new GridLength(0);
                     }

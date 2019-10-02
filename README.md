@@ -1,4 +1,9 @@
 ![TeslaCamViewerIcon](https://github.com/mattw01/TeslaCamViewer/blob/master/TeslaCamViewer/TeslaCamViewerIcon_64px.png?raw=true)
+# This fork
+Since the original Repository does not seem to be maintained any more I decided to fork it and fix some stuff for V10 myself, especially support for the rear cam.
+
+------------ Original below ------------
+
 # TeslaCam Viewer
 A simple TeslaCam recording viewer to easily sort recordings and view all cameras at once.
 
