@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace TeslaCamViewer
@@ -20,7 +16,7 @@ namespace TeslaCamViewer
         }
 
         public DelegateCommand(Action<object> execute,
-                       Predicate<object> canExecute)
+            Predicate<object> canExecute)
         {
             _execute = execute;
             _canExecute = canExecute;

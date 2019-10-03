@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Collections.ObjectModel;
 
 namespace TeslaCamViewer
@@ -14,36 +10,44 @@ namespace TeslaCamViewer
     public class TeslaCamDirectoryCollection
     {
         public string DisplayName { get; private set; }
+
         public ObservableCollection<TeslaCamEventCollection> Events { get; set; }
 
         public TeslaCamDirectoryCollection()
         {
-            this.Events = new ObservableCollection<TeslaCamEventCollection>();
+            Events = new ObservableCollection<TeslaCamEventCollection>();
         }
-        public void SetDisplayName(string Name)
+
+        public void SetDisplayName(string name)
         {
-            this.DisplayName = Name;
+            DisplayName = name;
         }
-        public void BuildFromBaseDirectory(string Directory)
+
+        public void BuildFromBaseDirectory(string directory)
         {
-            string[] Directories = System.IO.Directory.GetDirectories(Directory);
-            foreach (var Dir in Directories)
+            var directories = System.IO.Directory.GetDirectories(directory);
+            
+            foreach (var dir in directories)
             {
-                var e = new TeslaCamEventCollection();
-                if (e.BuildFromDirectory(Dir))
+                var teslaCamEventCollection = new TeslaCamEventCollection();
+
+                if (teslaCamEventCollection.BuildFromDirectory(dir))
                 {
-                    this.Events.Add(e);
+                    Events.Add(teslaCamEventCollection);
                 }
             }
-            string[] BaseFiles = System.IO.Directory.GetFiles(Directory);
-            if (BaseFiles.Count() > 0)
+
+            var baseFiles = System.IO.Directory.GetFiles(directory);
+
+            if (baseFiles.Any())
             {
                 var baseCollection = new TeslaCamEventCollection();
-                baseCollection.BuildFromDirectory(Directory);
-                this.Events.Add(baseCollection);
+                baseCollection.BuildFromDirectory(directory);
+                Events.Add(baseCollection);
             }
-            this.Events = new ObservableCollection<TeslaCamEventCollection>(Events.OrderBy(e => e.StartDate.UTCDateString));
-            this.DisplayName = new System.IO.DirectoryInfo(Directory).Name;
+
+            Events = new ObservableCollection<TeslaCamEventCollection>(Events.OrderBy(e => e.StartDate.UTCDateString));
+            DisplayName = new System.IO.DirectoryInfo(directory).Name;
         }
     }
 }

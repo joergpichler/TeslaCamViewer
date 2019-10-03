@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TeslaCamViewer
 {
@@ -12,44 +8,27 @@ namespace TeslaCamViewer
         private const string FileFormat = "yyyy-MM-dd_HH-mm-ss";
         private const string DisplayFormat = "M/d/yyyy h:mm tt";
 
-        public string UTCDateString { get; private set; }
-        public string DisplayValue
-        {
-            get
-            {
+        public string UTCDateString { get; }
+        public string DisplayValue => LocalTimeStamp.ToString(DisplayFormat);
 
-                return LocalTimeStamp.ToString(DisplayFormat);
-            }
-        }
         public DateTime UTCTimeStamp
         {
             get
             {
-
-                DateTime dt;
-                if (DateTime.TryParseExact(UTCDateString, FileFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                if (DateTime.TryParseExact(UTCDateString, FileFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTime))
                 {
-                    return dt;
+                    return dateTime;
                 }
-                else
-                {
-                    throw new Exception("Invalid date format: " + UTCDateString);
-                }
-            }
-        }
-        public DateTime LocalTimeStamp
-        {
-            get
-            {
 
-                return UTCTimeStamp;
+                throw new Exception("Invalid date format: " + UTCDateString);
             }
         }
 
-        public TeslaCamDate(string DateString)
-        {
-            UTCDateString = DateString;
-        }
+        public DateTime LocalTimeStamp => UTCTimeStamp;
 
+        public TeslaCamDate(string dateString)
+        {
+            UTCDateString = dateString;
+        }
     }
 }

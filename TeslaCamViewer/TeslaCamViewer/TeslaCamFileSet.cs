@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace TeslaCamViewer
 {
@@ -15,20 +9,15 @@ namespace TeslaCamViewer
     public class TeslaCamFileSet
     {
         public TeslaCamDate Date { get; private set; }
+
         public List<TeslaCamFile> Cameras { get; private set; }
 
-        public TeslaCamFile ThumbnailVideo
-        {
-            get
-            {
-                return Cameras.First(e => e.CameraLocation == TeslaCamFile.CameraType.FRONT);
-            }
-        }
+        public TeslaCamFile ThumbnailVideo => Cameras.First(e => e.CameraLocation == CameraType.Front);
 
-        public void SetCollection(List<TeslaCamFile> Cameras)
+        public void SetCollection(List<TeslaCamFile> cameras)
         {
-            this.Cameras = Cameras;
-            this.Date = Cameras.First().Date;
+            Cameras = cameras;
+            Date = cameras.First().Date;
         }
     }
 }

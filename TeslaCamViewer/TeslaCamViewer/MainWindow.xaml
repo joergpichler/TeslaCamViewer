@@ -1,74 +1,90 @@
-﻿<Controls:MetroWindow x:Class="TeslaCamViewer.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-        xmlns:local="clr-namespace:TeslaCamViewer"
-        mc:Ignorable="d"           
-        Title="TeslaCam Viewer V0.5.0" TitleCaps="False" Height="525" Width="817"
-                        AllowDrop="True"  Drop="Window_Drop" KeyUp="MetroWindow_KeyUp"
-                      Loaded="MetroWindow_Loaded">
+﻿<controls:MetroWindow x:Class="TeslaCamViewer.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:local="clr-namespace:TeslaCamViewer"
+                      mc:Ignorable="d"
+                      Title="TeslaCam Viewer V0.5.0" TitleCharacterCasing="Normal" Height="525" Width="817"
+                      AllowDrop="True" Drop="WindowOnDrop" KeyUp="WindowOnKeyUp"
+                      Loaded="WindowOnLoaded">
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+
         <Grid Grid.Row="0">
             <Menu>
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Search For TeslaCam Drive" x:Name="teslaCamSearch_Menu" Click="teslaCamSearch_Menu_Click"/>
-                    <MenuItem Header="_Exit" x:Name="exit_Menu" Click="exit_Menu_Click"/>
+                    <MenuItem Header="_Search For TeslaCam Drive" x:Name="MenuItemSearchForTeslaCamDrive"
+                              Click="MenuItemSearchForTeslaCamDriveOnClick" />
+                    <MenuItem Header="_Exit" x:Name="MenuItemExit" Click="MenuItemExitOnClick" />
                 </MenuItem>
+
                 <MenuItem Header="_Edit">
-                    <MenuItem Header="_Enable Search For TeslaCam Drive on Startup" IsCheckable="True" IsChecked="{Binding EnableAutoSearch}"/>
+                    <MenuItem Header="_Enable Search For TeslaCam Drive on Startup" IsCheckable="True"
+                              IsChecked="{Binding EnableAutoSearch}" />
                 </MenuItem>
+
                 <MenuItem Header="_View">
-                    <MenuItem Header="_Fullscreen" x:Name="fullscreen_Menu" Click="fullscreen_Menu_Click" IsCheckable="True"/>
+                    <MenuItem Header="_Fullscreen" x:Name="MenuItemFullScreen" Click="MenuItemFullScreenOnClick"
+                              IsCheckable="True" />
                 </MenuItem>
                 <MenuItem Header="_Playback">
-                    <MenuItem Header="_Automatically Play Next Clip" IsCheckable="True" IsChecked="{Binding EnableAutoPlaylist}"/>
-                    <MenuItem Header="Playback Speed" IsEnabled="False"/>
-                    <Slider x:Name="playbackSpeed_Slider" Width ="190px" Minimum="-50" Maximum="50" TickPlacement="BottomRight" Ticks="0" 
-                            Value="{Binding DisplayPlaybackSpeed}" Thumb.DragDelta="playbackSpeed_Slider_DragDelta" />
+                    <MenuItem Header="_Automatically Play Next Clip" IsCheckable="True"
+                              IsChecked="{Binding EnableAutoPlaylist}" />
+                    <MenuItem Header="Playback Speed" IsEnabled="False" />
+                    <Slider x:Name="SliderPlaybackSpeed" Width="190px" Minimum="-50" Maximum="50"
+                            TickPlacement="BottomRight" Ticks="0"
+                            Value="{Binding DisplayPlaybackSpeed}" Thumb.DragDelta="SliderPlaybackSpeedOnDragDelta" />
                 </MenuItem>
                 <MenuItem Header="_Help">
-                    <MenuItem Header="_View TeslaCam Viewer on GitHub" x:Name="viewOnGitHub_Menu" Click="viewOnGitHub_Menu_Click"/>
-                    <MenuItem Header="_About TeslaCam Viewer" x:Name="about_Menu" Click="about_Menu_Click"/>
+                    <MenuItem Header="_View TeslaCam Viewer on GitHub" x:Name="MenuItemViewOnGitHub"
+                              Click="MenuItemViewOnGitHubOnClick" />
+                    <MenuItem Header="_About TeslaCam Viewer" x:Name="MenuItemAbout" Click="MenuItemAboutOnClick" />
                 </MenuItem>
             </Menu>
         </Grid>
+
         <Grid Grid.Row="1">
+
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="33*" MinWidth="15"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="66*" MinWidth="150"/>
+                <ColumnDefinition Width="33*" MinWidth="15" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="66*" MinWidth="150" />
             </Grid.ColumnDefinitions>
+
             <Grid Grid.Column="0">
+
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0"  Text="TeslaCam Files" Margin="2"  FontFamily="Segoe UI Semibold" FontSize="16"/>
-                <TreeView Grid.Row="1"  Width="Auto"  ItemsSource="{Binding ListItems}" x:Name="treeview">
+
+                <TextBlock Grid.Row="0" Text="TeslaCam Files" Margin="2" FontFamily="Segoe UI Semibold" FontSize="16" />
+
+                <TreeView Grid.Row="1" Width="Auto" ItemsSource="{Binding ListItems}" x:Name="TreeView">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate
-        DataType="{x:Type local:TeslaCamDirectoryCollection}"
-        ItemsSource="{Binding Events}">
+                            DataType="{x:Type local:TeslaCamDirectoryCollection}"
+                            ItemsSource="{Binding Events}">
                             <StackPanel Orientation="Horizontal" Margin="2">
                                 <TextBlock Text="{Binding DisplayName}" />
                             </StackPanel>
                         </HierarchicalDataTemplate>
                         <HierarchicalDataTemplate
-        DataType="{x:Type local:TeslaCamEventCollection}"
-        ItemsSource="{Binding Recordings}">
+                            DataType="{x:Type local:TeslaCamEventCollection}"
+                            ItemsSource="{Binding Recordings}">
                             <StackPanel Orientation="Horizontal" Margin="2">
                                 <TextBlock Text="{Binding StartDate.DisplayValue}" />
                             </StackPanel>
                         </HierarchicalDataTemplate>
                         <HierarchicalDataTemplate
-        DataType="{x:Type local:TeslaCamFileSet}">
+                            DataType="{x:Type local:TeslaCamFileSet}">
                             <StackPanel Orientation="Horizontal" Margin="2">
                                 <!--<StackPanel.ContextMenu>
                                     <ContextMenu>
@@ -81,19 +97,24 @@
                             </StackPanel>
                         </HierarchicalDataTemplate>
                     </TreeView.Resources>
+
                     <TreeView.ItemContainerStyle>
                         <Style TargetType="{x:Type TreeViewItem}">
                             <EventSetter Event="MouseDoubleClick" Handler="OnItemMouseDoubleClick" />
                         </Style>
                     </TreeView.ItemContainerStyle>
+
                 </TreeView>
+
             </Grid>
-            <GridSplitter Width="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="DarkRed" />
-            <TabControl x:Name="tabs" Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+            <GridSplitter Width="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center"
+                          Background="DarkRed" />
+
+            <TabControl x:Name="TabControl" Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
                 <TabItem Header="Browse">
-                    <Frame x:Name="browseFrame"  NavigationUIVisibility="Hidden">
-                        
-                    </Frame>
+                    <Frame x:Name="FrameBrowse" NavigationUIVisibility="Hidden" />
                 </TabItem>
 
                 <TabItem Header="Play">
@@ -103,14 +124,19 @@
                         <Grid DockPanel.Dock="Bottom">
 
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
-                            <Button x:Name="playPause_Button" Click="playPause_Button_Click"  Content="►" Width="30" Height="30"  Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" FontFamily="Arial" FontSize="16"/>
+                            <Button x:Name="ButtonPlayPause" Click="ButtonPlayPauseOnClick" Content="►" Width="30"
+                                    Height="30" Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
+                                    FontFamily="Arial" FontSize="16" />
 
-                            <Slider Height="30"  x:Name="timeSlider" Grid.Column="1"  Minimum="0" Maximum="1" SmallChange="0.05" LargeChange="0.1" 
-                                    Thumb.DragStarted="timeSlider_DragStarted" Thumb.DragCompleted="timeSlider_DragCompleted" Thumb.DragDelta="timeSlider_DragDelta" />
+                            <Slider Height="30" x:Name="SliderTime" Grid.Column="1" Minimum="0" Maximum="1"
+                                    SmallChange="0.05" LargeChange="0.1"
+                                    Thumb.DragStarted="SliderTimeOnDragStarted"
+                                    Thumb.DragCompleted="SliderTimeOnDragCompleted"
+                                    Thumb.DragDelta="SliderTimeOnDragDelta" />
 
                         </Grid>
 
@@ -122,40 +148,47 @@
                             </Grid.RowDefinitions>
 
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="{Binding LeftVideoColumnWidth}"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="{Binding RightVideoColumnWidth}"/>
+                                <ColumnDefinition Width="{Binding LeftVideoColumnWidth}" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="{Binding RightVideoColumnWidth}" />
                             </Grid.ColumnDefinitions>
 
-                            <MediaElement x:Name="front" LoadedBehavior="Manual" ScrubbingEnabled="True">
+                            <MediaElement x:Name="MediaElementFront" LoadedBehavior="Manual" ScrubbingEnabled="True">
                                 <MediaElement.InputBindings>
-                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding SelectFullVideo}" 
-                                                  CommandParameter="{x:Static local:TeslaCamFile+CameraType.FRONT}" />
+                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding SelectFullVideo}"
+                                                  CommandParameter="{x:Static local:CameraType.Front}" />
                                 </MediaElement.InputBindings>
                             </MediaElement>
 
-                            <GridSplitter Margin="2" Height="2" Grid.Row="1" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="DarkRed" />
+                            <GridSplitter Margin="2" Height="2" Grid.Row="1" Grid.ColumnSpan="3"
+                                          VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                          Background="DarkRed" />
 
-                            <MediaElement x:Name="back" Grid.Column="2" LoadedBehavior="Manual" ScrubbingEnabled="True">
+                            <MediaElement x:Name="MediaElementBack" Grid.Column="2" LoadedBehavior="Manual"
+                                          ScrubbingEnabled="True">
                                 <MediaElement.InputBindings>
-                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding SelectFullVideo}" 
-                                                  CommandParameter="{x:Static local:TeslaCamFile+CameraType.BACK}" />
+                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding SelectFullVideo}"
+                                                  CommandParameter="{x:Static local:CameraType.Back}" />
                                 </MediaElement.InputBindings>
                             </MediaElement>
 
-                            <GridSplitter Margin="2 0 2 0" Width="2" Grid.Column="1" Grid.RowSpan="3"  VerticalAlignment="Stretch" HorizontalAlignment="Center"  Background="DarkRed" />
+                            <GridSplitter Margin="2 0 2 0" Width="2" Grid.Column="1" Grid.RowSpan="3"
+                                          VerticalAlignment="Stretch" HorizontalAlignment="Center" Background="DarkRed" />
 
-                            <MediaElement x:Name="left" Grid.Column="0" Grid.Row="2" LoadedBehavior="Manual" MediaOpened="MediaElement_MediaOpened" MediaEnded="left_MediaEnded"  ScrubbingEnabled="True">
+                            <MediaElement x:Name="MediaElementLeft" Grid.Column="0" Grid.Row="2"
+                                          LoadedBehavior="Manual" MediaOpened="MediaElementLeftOnMediaOpened"
+                                          MediaEnded="MediaElementLeftOnMediaEnded" ScrubbingEnabled="True">
                                 <MediaElement.InputBindings>
-                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding SelectFullVideo}" 
-                                                  CommandParameter="{x:Static local:TeslaCamFile+CameraType.LEFT_REPEATER}" />
+                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding SelectFullVideo}"
+                                                  CommandParameter="{x:Static local:CameraType.LeftRepeater}" />
                                 </MediaElement.InputBindings>
                             </MediaElement>
 
-                            <MediaElement x:Name="right" Grid.Column="2" Grid.Row="2"  LoadedBehavior="Manual" ScrubbingEnabled="True">
+                            <MediaElement x:Name="MediaElementRight" Grid.Column="2" Grid.Row="2"
+                                          LoadedBehavior="Manual" ScrubbingEnabled="True">
                                 <MediaElement.InputBindings>
-                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding SelectFullVideo}" 
-                                                  CommandParameter="{x:Static local:TeslaCamFile+CameraType.RIGHT_REPEATER}" />
+                                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding SelectFullVideo}"
+                                                  CommandParameter="{x:Static local:CameraType.RightRepeater}" />
                                 </MediaElement.InputBindings>
                             </MediaElement>
 
@@ -170,13 +203,15 @@
         </Grid>
 
         <StatusBar Height="25" Grid.Row="2">
-            <StatusBarItem Content="{Binding LeftStatusText}"/>
+            <StatusBarItem Content="{Binding LeftStatusText}" />
 
-            <StatusBarItem DockPanel.Dock="Right" Content="{Binding RightStatusText}"/>
+            <StatusBarItem DockPanel.Dock="Right" Content="{Binding RightStatusText}" />
             <StatusBarItem>
-                <TextBlock></TextBlock>
+                <TextBlock />
             </StatusBarItem>
 
         </StatusBar>
+
     </Grid>
-</Controls:MetroWindow>
+
+</controls:MetroWindow>

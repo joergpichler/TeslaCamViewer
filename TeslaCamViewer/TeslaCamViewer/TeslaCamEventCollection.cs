@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace TeslaCamViewer
 {
@@ -14,56 +10,56 @@ namespace TeslaCamViewer
     public class TeslaCamEventCollection
     {
         public TeslaCamDate StartDate { get; private set; }
+
         public TeslaCamDate EndDate { get; private set; }
+
         public List<TeslaCamFileSet> Recordings { get; set; }
-        public TeslaCamFile ThumbnailVideo
-        {
-            get
-            {
-                return Recordings.First().ThumbnailVideo;
-            }
-        }
+
+        public TeslaCamFile ThumbnailVideo => Recordings.First().ThumbnailVideo;
 
         public TeslaCamEventCollection()
         {
-            this.Recordings = new List<TeslaCamFileSet>();
+            Recordings = new List<TeslaCamFileSet>();
         }
 
-        public bool BuildFromDirectory(string Directory)
+        public bool BuildFromDirectory(string directory)
         {
             // Get list of raw files
-            string[] Files = System.IO.Directory.GetFiles(Directory, "*.mp4").OrderBy(x=>x).ToArray();
+            var files = System.IO.Directory.GetFiles(directory, "*.mp4").OrderBy(x => x).ToArray();
 
             // Make sure there's at least one valid file
-            if (Files.Length < 1) { return false; }
+            if (files.Length < 1)
+            {
+                return false;
+            }
 
             // Create a list of cam files
-            List<TeslaCamFile> CurrentTeslaCams = new List<TeslaCamFile>(Files.Length);
+            var currentTeslaCams = new List<TeslaCamFile>(files.Length);
 
             // Convert raw file to cam file
-            foreach (var File in Files)
+            foreach (var file in files)
             {
-                TeslaCamFile f = new TeslaCamFile(File);
-                CurrentTeslaCams.Add(f);
+                var teslaCamFile = new TeslaCamFile(file);
+                currentTeslaCams.Add(teslaCamFile);
             }
 
             // Now get list of only distinct events
-            List<string> DistinctEvents = CurrentTeslaCams.Select(e => e.Date.UTCDateString).Distinct().ToList();
+            var distinctEvents = currentTeslaCams.Select(e => e.Date.UTCDateString).Distinct().ToList();
 
             // Find the files that match the distinct event
-            foreach (var CurrentEvent in DistinctEvents)
+            foreach (var currentEvent in distinctEvents)
             {
-                List<TeslaCamFile> MatchedFiles = CurrentTeslaCams.Where(e => e.Date.UTCDateString == CurrentEvent).ToList();
-                TeslaCamFileSet CurrentFileSet = new TeslaCamFileSet();
+                var matchedFiles = currentTeslaCams.Where(e => e.Date.UTCDateString == currentEvent).ToList();
+                var currentFileSet = new TeslaCamFileSet();
 
-                CurrentFileSet.SetCollection(MatchedFiles);
-                this.Recordings.Add(CurrentFileSet);
+                currentFileSet.SetCollection(matchedFiles);
+                Recordings.Add(currentFileSet);
             }
 
             // Set metadata
-            this.Recordings = Recordings.OrderBy(e => e.Date.UTCDateString).ToList();
-            this.StartDate = Recordings.First().Date;
-            this.EndDate = Recordings.Last().Date;
+            Recordings = Recordings.OrderBy(e => e.Date.UTCDateString).ToList();
+            StartDate = Recordings.First().Date;
+            EndDate = Recordings.Last().Date;
 
             // Success
             return true;

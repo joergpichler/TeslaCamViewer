@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TeslaCamViewer
 {
@@ -11,41 +7,52 @@ namespace TeslaCamViewer
     /// </summary>
     public class TeslaCamFile
     {
-        public enum CameraType
-        {
-            UNKNOWN,
-            LEFT_REPEATER,
-            FRONT,
-            RIGHT_REPEATER,
-            BACK
-        }
         private readonly string FileNameRegex = "([0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}-[0-9]{2}(?:-[0-9]{2})?)-([a-z_]*).mp4";
-        public string FilePath { get; private set; }
-        public string FileName { get { return System.IO.Path.GetFileName(FilePath); } }
-        public TeslaCamDate Date { get; private set; }
-        public CameraType CameraLocation { get; private set; }
-        public string FileDirectory { get { return System.IO.Path.GetDirectoryName(FilePath); } }
-        public Uri FileURI { get { return new Uri(this.FilePath); } }
 
-        public TeslaCamFile(string FilePath)
+        public string FilePath { get; }
+
+        public string FileName => System.IO.Path.GetFileName(FilePath);
+
+        public TeslaCamDate Date { get; }
+
+        public CameraType CameraLocation { get; }
+
+        public string FileDirectory => System.IO.Path.GetDirectoryName(FilePath);
+
+        public Uri FileUri => new Uri(this.FilePath);
+
+        public TeslaCamFile(string filePath)
         {
-            this.FilePath = FilePath;
-            var m = new System.Text.RegularExpressions.Regex(FileNameRegex).Matches(FileName);
-            if (m.Count != 1)
-                throw new Exception("Invalid TeslaCamFile '" + FileName + "'");
-            this.Date = new TeslaCamDate(m[0].Groups[1].Value);
-            string cameraType = m[0].Groups[2].Value;
-            if (cameraType == "front")
-                CameraLocation = CameraType.FRONT;
-            else if (cameraType == "left_repeater")
-                CameraLocation = CameraType.LEFT_REPEATER;
-            else if (cameraType == "right_repeater")
-                CameraLocation = CameraType.RIGHT_REPEATER;
-            else if (cameraType == "back")
-                CameraLocation = CameraType.BACK;
-            else
-                throw new Exception("Invalid Camera Type: '" + cameraType + "'");
-        }
+            FilePath = filePath;
 
+            var matches = new System.Text.RegularExpressions.Regex(FileNameRegex).Matches(FileName);
+            
+            if (matches.Count != 1)
+            {
+                throw new Exception("Invalid TeslaCamFile '" + FileName + "'");
+            }
+
+            Date = new TeslaCamDate(matches[0].Groups[1].Value);
+
+            var cameraType = matches[0].Groups[2].Value;
+
+            switch (cameraType)
+            {
+                case "front":
+                    CameraLocation = CameraType.Front;
+                    break;
+                case "left_repeater":
+                    CameraLocation = CameraType.LeftRepeater;
+                    break;
+                case "right_repeater":
+                    CameraLocation = CameraType.RightRepeater;
+                    break;
+                case "back":
+                    CameraLocation = CameraType.Back;
+                    break;
+                default:
+                    throw new Exception("Invalid Camera Type: '" + cameraType + "'");
+            }
+        }
     }
 }
